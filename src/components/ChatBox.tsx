@@ -206,11 +206,11 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
                 const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
                     chatSessionId: chatSession.id,
-                    lastMessageText: "Suggest three follow up prompts",
+                    lastMessageText: "これまでの会話の流れに基づいて、次に質問できる3つのフォローアップ質問を日本語で提案してください。",
                     usePastMessages: true,
                     outputStructure: JSON.stringify({
                         title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
-                        description: "Help the user chose the next prompt to send.",
+                        description: "ユーザーが次に送信するプロンプトを選択するのを支援します。",
                         type: "object",
                         properties: {// Change anyting in the properties according to the json schema reference: https://json-schema.org/understanding-json-schema/reference
                             suggestedPrompts: {
@@ -221,7 +221,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                                 minItems: 3,
                                 maxItems: 3,
                                 description: `
-                                    Prompts to suggest to a user when interacting with a large language model
+                                    大規模言語モデルとやり取りする際にユーザーに提案する日本語のプロンプト
                                     `
                             }
                         },
