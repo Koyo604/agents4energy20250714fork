@@ -51,7 +51,7 @@ export const handler = async (event: any, context: any, callback: any): Promise<
       console.error('Error executing SQL:', error);
       console.error('SQL that failed:', sql);
       // Don't throw error for already exists errors
-      if (error.message && error.message.includes('already exists')) {
+      if ((error as Error).message && (error as Error).message.includes('already exists')) {
         console.log('Resource already exists, continuing...');
       } else {
         throw error;
