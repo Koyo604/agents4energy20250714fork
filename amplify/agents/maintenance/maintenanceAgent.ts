@@ -51,7 +51,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const bedrockAgentRole = new iam.Role(scope, 'BedrockAgentRole', {
         roleName: agentRoleName,
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
-        description: 'メンテナンスエージェントがKBにアクセスしCMMSをクエリするためのIAMロール',
+        description: 'IAM role for maintenance agent to access KB and query CMMS',
     });
 
 
