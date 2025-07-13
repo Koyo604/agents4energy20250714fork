@@ -419,8 +419,8 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                 <Container
                     header={
                         <>
-                            <Header variant="h3">Generative AI chat - {chatSession?.aiBotInfo?.aiBotName}</Header>
-                            <span className='prompt-label'>Try one of these example prompts</span>
+                            <Header variant="h3">生成AIチャット - {chatSession?.aiBotInfo?.aiBotName}</Header>
+                            <span className='prompt-label'>以下のサンプルプロンプトをお試しください</span>
                             <ButtonDropdown
                                 ariaLabel="Suggested Prompts"
                                 items={[
@@ -433,7 +433,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                             <span className='prompt-label'>
                                 <Button
                                     onClick={async () => {
-                                        if (chatSession?.id && window.confirm('Are you sure you want to delete this chat session? This action cannot be undone.')) {
+                                        if (chatSession?.id && window.confirm('このチャットセッションを削除しますか？この操作は元に戻せません。')) {
                                             await amplifyClient.models.ChatSession.delete({ id: chatSession.id })
                                         }
                                     }}
@@ -448,11 +448,11 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                             stretch
                             constraintText={
                                 <>
-                                    Use of this service is subject to the{' '}
+                                    このサービスの使用は{' '}
                                     <Link href="#" external variant="primary" fontSize="inherit">
-                                        AWS Responsible AI Policy
+                                        AWS責任あるAIポリシー
                                     </Link>
-                                    .
+                                    に従います。
                                 </>
                             }
                         >
@@ -465,10 +465,10 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                                 onChange={({ detail }) => setUserPrompt(detail.value)}
                                 onAction={addUserChatMessage}
                                 value={userPrompt}
-                                actionButtonAriaLabel={isGenAiResponseLoading ? 'Send message button - suppressed' : 'Send message'}
+                                actionButtonAriaLabel={isGenAiResponseLoading ? 'メッセージ送信ボタン - 無効' : 'メッセージ送信'}
                                 actionButtonIconName="send"
-                                ariaLabel={isGenAiResponseLoading ? 'Prompt input - suppressed' : 'Prompt input'}
-                                placeholder="Ask a question"
+                                ariaLabel={isGenAiResponseLoading ? 'プロンプト入力 - 無効' : 'プロンプト入力'}
+                                placeholder="質問を入力してください"
                                 autoFocus
                             />
                         </FormField>

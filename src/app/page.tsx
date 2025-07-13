@@ -45,30 +45,30 @@ export default function Home() {
                   variant="h1"
                   padding="n"
                 >
-                  Agents4Energy - Sample
+                  Agents4Energy - サンプル
                 </Box>
                 <Box
                   fontSize="display-l"
                   fontWeight="light"
                 >
-                  Accelerate your GenAI journey with agentic workflows
+                  エージェントワークフローでGenAIの旅を加速
                 </Box>
                 <Box
                   variant="p"
                   color="text-body-secondary"
                   margin={{ top: "xs", bottom: "l" }}
                 >
-                  Deploy persona-based AI assistants on AWS to automate and optimize your operations.
+                  AWS上にペルソナベースのAIアシスタントをデプロイし、業務を自動化・最適化します。
                 </Box>
                 <SpaceBetween
                   direction="horizontal"
                   size="xs"
                 >
                   <Button variant="primary" href='/chat'>
-                    Start a Chat
+                    チャットを始める
                   </Button>
                   <Button href='/press-release'>
-                    Read the Press Release / FAQ
+                    プレスリリース / FAQを読む
                   </Button>
                 </SpaceBetween>
               </Box>

@@ -1,18 +1,24 @@
-# Agents4Energy 
+# Agents4Energy - 日本語対応版
 
-Getting started deploying generative AI agents for the first time? Begin by deploying [this agents4energy sample agent repository](https://github.com/aws-samples/sample-agents4energy-agent-template-alpha).
+初めて生成AIエージェントをデプロイしますか？まずは[このagents4energyサンプルエージェントリポジトリ](https://github.com/aws-samples/sample-agents4energy-agent-template-alpha)から始めてください。
 
-Agents4Energy (A4E) is an easily configurable and deployable, set of open-source agentic workflows to help customers in Energy industry accelerate their workloads on AWS. A4E enables industry professionals to use generative AI assistants for a range of common energy industry use cases such as reservoir characterization, well workover assessment, field data analysis, supply chain optimization, and asset integrity management.
+Agents4Energy (A4E) は、エネルギー業界のお客様がAWS上でワークロードを加速するのに役立つ、設定・デプロイが容易なオープンソースのエージェントワークフローセットです。A4Eにより、業界の専門家は貯留層特性評価、坑井修理評価、フィールドデータ分析、サプライチェーン最適化、資産完全性管理など、エネルギー業界の一般的な用途で生成AIアシスタントを使用できます。
+
+## 日本語対応の特徴
+- **完全日本語UI**: すべてのユーザーインターフェースが日本語化
+- **日本語チャット対応**: 自然な日本語での質問・回答
+- **日本語データベース**: 機器名・作業内容が日本語化されたサンプルデータ
+- **親切な応答システム**: 曖昧な質問や該当データなしの場合も適切にガイダンス
 
 ![A4E Constructs](assets/images/A4E-Open-Source-Architecture.png)
 
-It is no exaggeration to say that generative artificial intelligence (GenAI) is fundamentally revolutionizing the way we work.  Large Language Model (LLM) capabilities have bridged the communication gap between humans and computers fostering a new way of working that is already providing magnitiude shifts in productivity.  Agents and agentic workflows are terms that are no longer just for the techies, being mentioned every day in the news, talk shows, and around the water cooler.  This blog focuses on the energy industry, but every industry is being disrupted, and the landscape is changing on a weekly, or even daily basis.
+生成人工知能（GenAI）が私たちの働き方を根本的に革命化していることは誇張ではありません。大規模言語モデル（LLM）の機能により、人間とコンピューター間のコミュニケーションギャップが埋められ、すでに生産性の大幅な向上をもたらす新しい働き方が促進されています。エージェントとエージェントワークフローは、もはや技術者だけの用語ではなく、ニュース、トークショー、そして日常会話で毎日言及されています。
 
-To address the needs of the energy industry and harness the great power presented by GenAI, AWS is proud to announce Agents4Energy.  This solution makes it easy for operators and service companies to incorporate the sixth generation of computing into their existing technical environments.  Much like a travel agent handles the nitty-gritty details of booking a vacation for you, energy agents scan diverse data sources and enterprise systems to unlock insights and complete tasks on your behalf.
+エネルギー業界のニーズに対応し、GenAIが提示する大きな力を活用するため、AWSはAgents4Energyを発表いたします。このソリューションにより、オペレーターやサービス会社は既存の技術環境に第6世代のコンピューティングを簡単に組み込むことができます。旅行代理店があなたの代わりに休暇予約の細かい詳細を処理するように、エネルギーエージェントは多様なデータソースと企業システムをスキャンして洞察を解き放ち、あなたの代わりにタスクを完了します。
 
 ![Production Agent](assets/images/A4E-ProductionAgentScreenShot.png)
 
-Agents4Energy encapsulates the industry expertise of hundreds of energy professionals and centuries of experience to simplify the daily undifferentiated tasks of operating energy assets.  Think of all the verifications, optimizations, and analysis that you and your team doesn't have time to do.  These are the perfect tasks to configure agents to work on.
+Agents4Energyは、何百人ものエネルギー専門家の業界専門知識と何世紀もの経験を集約し、エネルギー資産運用の日常的な非差別化タスクを簡素化します。あなたとあなたのチームが時間をかけることができないすべての検証、最適化、分析を考えてみてください。これらは、エージェントに作業を設定するのに最適なタスクです。
 
 # AWS Reference Architecture
 ![Ref Arch](assets/images/A4E-Reference-Architecture.png)
@@ -20,35 +26,35 @@ Agents4Energy encapsulates the industry expertise of hundreds of energy professi
 # Solution Deployment
 For detailed deployment instructions, please see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-## Agent Development
-To begin developing in this repo, perform the following steps. These steps are independent of the deployment steps.
-1. Clone the repo
-1. Run `npm install` to install the required packages.
-1. Run `npm run ecrAuth` to authenticate with the AWS ECR repo. This lets you pull lambda build images.
-1. Run `npx ampx sandbox` to create your personal sandbox environment for development.
-1. In a different ternimal run `npm run dev` to start a development server for the front end. You can reach this server by navigating to `localhost:3000` in an internet browser.
-1. Now when you make code changes, they will be deployed to both the front and back end.
+## エージェント開発
+このリポジトリで開発を始めるには、以下の手順を実行してください。これらの手順はデプロイ手順とは独立しています。
+1. リポジトリをクローンします
+1. `npm install` を実行して必要なパッケージをインストールします
+1. `npm run ecrAuth` を実行してAWS ECRリポジトリで認証します。これによりLambdaビルドイメージをプルできます
+1. `npx ampx sandbox` を実行して開発用の個人サンドボックス環境を作成します
+1. 別のターミナルで `npm run dev` を実行してフロントエンドの開発サーバーを起動します。インターネットブラウザーで `localhost:3000` にアクセスしてサーバーにアクセスできます
+1. コードを変更すると、フロントエンドとバックエンドの両方にデプロイされます
 
 
-### Limit sign up to certain email addresses
-When a user signs up for an account, the suffix of their email address is checked against an allow list.
-To change which email address suffixes are allowed, follow these steps:
-1. In the AWS Amplify console, navigate to your branch.
-1. Click the "Functions" button on the left side bar
-1. Look for the function with "preSignUp" in the function name. Click on this function.
-1. Click "View in Lambda"
-1. Click "Configuration" and then "Environmental Variables"
-1. The variable named "ALLOWED_EMAIL_SUFFIXES" is a comma separated list of allowed email suffixes. Change this variable to reflect the email addresses you would like to allow. If you add an empty element (ex: `@amazon.com,`), any email address will be allowed.
+### 特定のメールアドレスのみサインアップを制限
+ユーザーがアカウントにサインアップするとき、メールアドレスのサフィックスが許可リストと照合されます。
+許可されるメールアドレスのサフィックスを変更するには、以下の手順に従ってください：
+1. AWS Amplifyコンソールで、あなたのブランチに移動します
+1. 左サイドバーの「Functions」ボタンをクリックします
+1. 関数名に「preSignUp」が含まれる関数を探し、クリックします
+1. 「View in Lambda」をクリックします
+1. 「Configuration」、そして「Environmental Variables」をクリックします
+1. 「ALLOWED_EMAIL_SUFFIXES」という名前の変数は、許可されたメールサフィックスのカンマ区切りリストです。許可したいメールアドレスを反映するようにこの変数を変更してください。空の要素を追加すると（例：`@amazon.com,`）、すべてのメールアドレスが許可されます
 
-## Production Agent
+## 生産エージェント
 
-### Add new structured data
-This data will be queried using Amazon Athena
+### 新しい構造化データの追加
+このデータはAmazon Athenaを使用してクエリされます
 
-Steps:
-1. Upload your data to the key `production-agent/structured-data-files/` in the file drive
-1. Wait 5 minutes for the AWS Glue crawler to run, and for the new table definitions to be loaded into the Amazon Bedrock Knowledge Base.
-1. Now you can ask the production agent questions about the new data!
+手順：
+1. ファイルドライブの `production-agent/structured-data-files/` キーにデータをアップロードします
+1. AWS Glueクローラーが実行され、新しいテーブル定義がAmazon Bedrock Knowledge Baseに読み込まれるまで５分間待ちます
+1. これで生産エージェントに新しいデータについて質問できます！
 
 ### Add new data source
 You can add new data sources thorugh [Amazon Athena Federated Query](https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html)
@@ -68,8 +74,15 @@ Example Table Definition:
   "tableDefinition": "\"date\"\tvarchar\n\"wti_price\"\tdouble\n\"brent_price\"\tdouble\n\"volume\"\tbigint"
 }
 ```
-## Maintenance Agent
+## メンテナンスエージェント
 ![Maintenance Agent](assets/images/A4E-Maintenance-Agent.png)
-You can modify the data that is included in the Aurora Serverless v2 PostgreSQL database by altering the [INSERT SQL statements used in the DB prep Lambda function](amplify/agents/maintenance/lambda).
 
-This Lambda function can be run at any time to reset the sample data to the original deployed state.  This can be useful if you use the agent to modify or update the data to test the read-write capabilities of the text-to-SQL tool.
+### 日本語対応機能
+- **日本語チャット**: 自然な日本語での質問・回答
+- **日本語データ**: 機器名、作業内容が日本語化
+- **親切なガイダンス**: 曖昧な質問やデータなしの場合も適切に対応
+
+### データベースのカスタマイズ
+Aurora Serverless v2 PostgreSQLデータベースに含まれるデータを変更するには、[DB準備Lambda関数で使用されるINSERT SQL文](amplify/agents/maintenance/lambda)を変更してください。
+
+このLambda関数はいつでも実行してサンプルデータを元のデプロイ状態にリセットできます。これは、エージェントを使用してデータを変更または更新し、text-to-SQLツールの読み書き機能をテストする場合に便利です。

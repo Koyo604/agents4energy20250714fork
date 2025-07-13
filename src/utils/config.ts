@@ -20,55 +20,55 @@ export type LangGraphAgent = BaseAgent & {
 
 export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGraphAgent } = {
     PlanAndExecuteAgent: {
-        name: `Production Agent`,
+        name: `生産エージェント`,
         source: `graphql`,
         samplePrompts: [
-            `This morning well with API number 30-045-29202 stopped producing gas with indication of a hole in tubing.  
-            Make a table of all operational events found in the well files. 
-            Query all historic monthly production rates and make a plot with both the event and production data. 
-            Estimate the value of the well's remaining production. 
-            Write a procedure to repair the well, estimate the cost of the repair, and calculate financial metrics. 
-            Make an executive report about repairing the well with detailed cost and procedure data. 
-            Use the ai role for all steps.
+            `今朝API番号30-045-29202の坑井がガス生産を停止し、チュービングに穴があることが示されました。
+            坑井ファイルから見つかったすべての運用イベントの表を作成してください。
+            すべての歴史的月別生産率をクエリし、イベントデータと生産データの両方を含むプロットを作成してください。
+            坑井の残存生産価値を推定してください。
+            坑井の修理手順を作成し、修理コストを推定し、財務指標を計算してください。
+            詳細なコストと手順データを含む坑井修理に関する経営報告書を作成してください。
+            すべてのステップでAIロールを使用してください。
             `.replace(/^\s+/gm, ''),
-            `Search the well files for the well with API number 30-045-29202 to make a table with type of operation (drilling, completion, workover, plugging, other), text from the report describing operational details, and document title.
-            Also execute a sql query to get the total monthly oil, gas and water production from this well.
-            Create a plot with both the event data and the production data. `.replace(/^\s+/gm, ''), //This trims the white space at the start of each line
-            `Plot the total monthly oil, gas, and water production since 1900 for the well with API number 30-045-29202`,
-            `Which form of artifical lift best matches my personality?`
+            `API番号30-045-29202の坑井ファイルを検索し、作業タイプ（掘削、完成、修理、廃坑、その他）、作業詳細を説明するレポートテキスト、文書タイトルを含む表を作成してください。
+            また、SQLクエリを実行してこの坑井の月別総石油、ガス、水生産量を取得してください。
+            イベントデータと生産データの両方を含むプロットを作成してください。`.replace(/^\s+/gm, ''),
+            `API番号30-045-29202の坑井について1900年以降の月別総石油、ガス、水生産量をプロットしてください`,
+            `私の性格に最も適した人工揚水方式は何ですか？`
         ]
     },
     MaintenanceAgent: {
-        name: "Maintenance Agent",
+        name: "メンテナンスエージェント",
         source: "bedrockAgent",
         agentId: outputs.custom.maintenanceAgentId,
         agentAliasId: outputs.custom.maintenanceAgentAliasId,
         samplePrompts: [
-            "How many tanks are in my biodiesel unit?",
-            "In September 2024, what are a few key incidents and actions taken at the biodiesel unit?",
+            "バイオディーゼルユニットにはいくつのタンクがありますか？",
+            "2024年9月にバイオディーゼルユニットで発生した主要なインシデントと対応措置を教えてください。",
         ],
     } as BedrockAgent,
     RegulatoryAgent: {
-        name: "Regulatory Agent",
+        name: "規制エージェント",
         source: "bedrockAgent",
         agentId: outputs.custom.regulatoryAgentId,
         agentAliasId: outputs.custom.regulatoryAgentAliasId,
         samplePrompts: [
-            "What are the requirements for fugitive emissions monitoring and reporting in the U.S.?",
-            "What are the requirements for decomissioning an offshore oil well in Brazil?",
+            "米国での漏洩排出の監視と報告に関する要件は何ですか？",
+            "ブラジルでの海上油井の廃止に関する要件は何ですか？",
         ],
     } as BedrockAgent,
     PetrophysicsAgent: {
-        name: "Petrophysics Agent",
+        name: "岩石物理エージェント",
         source: "bedrockAgent",
         agentId: outputs.custom.petrophysicsAgentId,
         agentAliasId: outputs.custom.petrophysicsAgentAliasId,
         samplePrompts: [
-            "Give me a summary fluid substitution modeling",
-            "Give me the inputs of Gassmann equation",
-            "What are AVO classes?",
-            "Calculate the intercept and gradient value of the wet sandstone with vp=3.5 km/s, vs=1.95 km/s, bulk density=2.23 gm/cc when it is overlain by a shale? Determine the AVO class.",
-            "A wet sandstone has vp=3.5 km/s, vs=1.95 km/s, bulk density=2.23 gm/cc. What are the expected seismic velocities of the sandstone if the desired ﬂuid saturation is 80% oil? Use standard assumptions."
+            "流体置換モデリングの概要を教えてください",
+            "Gassmann方程式の入力パラメータを教えてください",
+            "AVOクラスとは何ですか？",
+            "vp=3.5 km/s、vs=1.95 km/s、体積密度=2.23 gm/ccの湿潤砂岩が頁岩に覆われている場合の切片と勾配値を計算し、AVOクラスを決定してください。",
+            "vp=3.5 km/s、vs=1.95 km/s、体積密度=2.23 gm/ccの湿潤砂岩で、流体飽和度が80%の石油の場合の予想地震速度はどの程度ですか？標準的な仮定を使用してください。"
             ],
     } as BedrockAgent
 }

@@ -284,7 +284,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                     // datalabels: {
                     //   color: '#FFCE56'
                     // },
-                    label: "Events",
+                    label: "イベント",
                     // tension: 0.1,
 
                     // borderColor: 'rgb(75, 192, 192)',
@@ -345,14 +345,14 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
               type: 'time' as const,
               time: {
                 unit: 'day' as const,
-                tooltipFormat: 'PP',
+                tooltipFormat: 'yyyy年MM月dd日',
                 displayFormats: {
-                  day: 'yyyy MMM d',
+                  day: 'yyyy年MM月d日',
                 },
               },
               title: {
                 display: true,
-                text: 'date',
+                text: '日付',
               },
               adapters: {
                 date: {
@@ -369,7 +369,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
               type: 'logarithmic' as const,
               title: {
                 display: true,
-                text: 'Value (log scale)',
+                text: '値 (対数スケール)',
               },
             },
           },
@@ -410,22 +410,21 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                 weight: "bold"
               },
               formatter: function () {//value, context) {
-                return 'event'
+                return 'イベント'
               }
             },
 
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  // Check if the dataset label is "Events"
-                  if (context.dataset.label === "Events") {
+                  // Check if the dataset label is "イベント"
+                  if (context.dataset.label === "イベント") {
                     // Custom tooltip for Events
                     const datasetIndex = context.datasetIndex;
                     const index = context.dataIndex
                     const rowData = data.datasets[datasetIndex].data[index].rowData
                     return rowData?.split('\n')
-                    // return `Line 1\nLine 2\nLine 3`.split("\n");
-                    // return `Events: ${context.parsed.y}`; // Modify this according to your needs
+                    // return `イベント: ${context.parsed.y}`; // Modify this according to your needs
                   }
                   // Return default tooltip for other datasets
                   return `${context.dataset.label}\n${context.parsed.y}\n${new Date(context.parsed.x)}`.split('\n');
@@ -508,7 +507,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
         if (columnNames.includes('s3Key')) {
           columns.push({
             field: 's3Key',
-            headerName: 'Document Links',
+            headerName: '文書リンク',
             flex: 1,
             minWidth: 150,
             renderCell: (params) => {
@@ -516,10 +515,10 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
               return (
                 <Box display='flex' flexDirection='column'>
                   <Link href={`/files/${params.value.slice(0, -5)}`} target="_blank" rel="noopener">
-                    pdf link
+                    PDFリンク
                   </Link>
                   <Link href={`/files/${params.value}`} target="_blank" rel="noopener">
-                    yaml link
+                    YAMLリンク
                   </Link>
                 </Box>
               )
@@ -750,7 +749,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                     setHideRows(prevState => !prevState);
                   }}
                 >
-                  {hideRows ? 'Show All Rows' : 'Hide Low Relevance Rows'}
+                  {hideRows ? 'すべての行を表示' : '関連性の低い行を非表示'}
                 </Button>
               </Popover>
             </div>

@@ -29,7 +29,7 @@ const TopNavBar = () => {
       <TopNavigation
         identity={{
           href: "/",
-          title: "Agents4Energy - Sample",
+          title: "Agents4Energy - サンプル",
           logo: {
             src: logoSmallTopNavigation.src,
             alt: "A4E"
@@ -45,7 +45,7 @@ const TopNavBar = () => {
               if (item.detail.id === 'signout') signOut()
             },
             items: [
-              { id: "signout", text: "Sign out"}
+              { id: "signout", text: "サインアウト"}
             ]
           }] : [])
         ]}
@@ -55,7 +55,7 @@ const TopNavBar = () => {
           onChange={({ detail }) => setUseDarkMode(detail.checked)}
           checked={useDarkMode}
         >
-          Dark Mode
+          ダークモード
         </Toggle>
       </div>
     </>

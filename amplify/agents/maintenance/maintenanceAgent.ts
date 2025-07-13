@@ -32,7 +32,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     // const foundationModel = 'anthropic.claude-3-5-sonnet-20241022-v2:0';
     const agentName = `A4E-Maintenance-${stackUUID}`;
     const agentRoleName = `AmazonBedrockExecutionRole_A4E_Maintenance-${stackUUID}`;
-    const agentDescription = 'Agent for energy industry maintenance workflows';
+    const agentDescription = 'エネルギー業界のメンテナンスワークフロー用エージェント';
     const knowledgeBaseName = `A4E-KB-Maintenance-${stackUUID}`;
     const postgresPort = 5432;
     const maxLength = 4096;
@@ -51,7 +51,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const bedrockAgentRole = new iam.Role(scope, 'BedrockAgentRole', {
         roleName: agentRoleName,
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
-        description: 'IAM role for Maintenance Agent to access KBs and query CMMS',
+        description: 'メンテナンスエージェントがKBにアクセスしCMMSをクエリするためのIAMロール',
     });
 
 
@@ -93,7 +93,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     
     // Create a Lambda function that runs SQL statements to prepare the postgres cluster with sample data
     const prepDbFunction = new lambda.Function(scope, `PrepDbFunction`, {
-        description: 'Agents4Energy CMMS data population function - will reset data with each run',
+        description: 'Agents4Energy CMMSデータ投入関数 - 実行するたびにデータをリセットします',
         runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'index.handler',
         timeout: cdk.Duration.minutes(15),
@@ -140,8 +140,8 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const maintenanceKnowledgeBase = new cdkLabsBedrock.KnowledgeBase(scope, `KB-Maintenance`, {//${stackName.slice(-5)}
         embeddingsModel: cdkLabsBedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
         // name: knowledgeBaseName, //Note: The knowledge base name will contain the id of this construct "MaintKB" even without this key being set
-        instruction: `You are a helpful question answering assistant. You answer user questions factually and honestly related to industrial facility maintenance and operations`,
-        description: 'Maintenance Knowledge Base',
+        instruction: `あなたは産業施設のメンテナンスと運用に関する質問に事実に基づいて正直に答える親切な質問応答アシスタントです。`,
+        description: 'メンテナンスナレッジベース',
     });
     const s3docsDataSource = maintenanceKnowledgeBase.addS3DataSource({
         bucket: props.s3Bucket,
@@ -160,7 +160,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     // Lambda Function
     const lambdaFunction = new lambda.Function(scope, 'QueryCMMS', {
         //functionName: 'Query-CMMS',
-        description: 'Agents4Energy tools to query CMMS database',
+        description: 'CMMSデータベースをクエリするAgents4Energyツール',
         runtime: lambda.Runtime.PYTHON_3_12,
         code: lambda.Code.fromAsset('amplify/functions/text2SQL/'),
         handler: 'maintenanceAgentAG.lambda_handler',
@@ -196,18 +196,27 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const agentMaint = new bedrock.CfnAgent(scope, 'MaintenanceAgent', {
         agentName: agentName,
         description: agentDescription,
-        instruction: `You are an industrial maintenance specialist who has access to files and data about internal company operations.  
-        Shift handover reports, maintenance logs, work permits, safety inspections and other data should be used to provide insights on the efficiency and 
-        safety of operations for the facility or operations manager.  To find information from the Computerized Maintenance Management System (CMMS), first 
-        try to use the action group tool to query the SQL database as it is is the definitive system of record for information.  
+        instruction: `あなたは社内の運用に関するファイルやデータにアクセスできる産業メンテナンス専門家です。
+        シフト引継ぎ報告書、メンテナンスログ、作業許可証、安全検査などのデータを使用して、施設や運用管理者に対して運用の効率性と
+        安全性に関する洞察を提供してください。
         
-        The kb-maintenance Bedrock Knowledge base may also have information in documents.  Alert the user if you find discrepancies between the relational 
-        database and documents in the KB.  For each request, check both data sources and compare the data to see if it matches.  When running SQL statements, 
-        verify that the syntax is correct and results are returned from the CMMS database.  If you do not get results, rewrite the query and try again.`,
+        重要な機器情報:
+        - バイオディーゼルユニットはLocation 934にあり、K-901(バイオディーゼル供給タンク)、K-902(バイオディーゼル供給タンク)、R-901(バイオディーゼル反応器)があります
+        - 安全上重要な機器はsafetycritical='TRUE'で検索できます
+        - 熱交換器はH-で始まる機器IDで、冷却塔はH-501からH-504です
+        - 原油ポンプはP-101、P-102で、原油供給タンクはK-101からK-104です
+        
+        コンピュータ化メンテナンス管理システム（CMMS）から情報を見つけるには、まず
+        アクショングループツールを使用してSQLデータベースをクエリしてください。これが情報の決定的なシステムレコードです。
+        
+        kb-maintenanceのBedrock Knowledge baseにも文書に情報がある場合があります。リレーショナル
+        データベースとKB内の文書間で不一致を見つけた場合は、ユーザーに警告してください。各リクエストに対して、両方のデータソースを確認し、
+        データが一致するかどうかを比較してください。SQL文を実行する際は、構文が正しく、CMMSデータベースから結果が返されることを確認してください。
+        結果が得られない場合は、クエリを書き直して再試行してください。`,
         foundationModel: foundationModel,
         autoPrepare: true,
         knowledgeBases: [{
-            description: 'Maintenance Knowledge Base',
+            description: 'メンテナンスナレッジベース',
             knowledgeBaseId: maintenanceKnowledgeBase.knowledgeBaseId,
             // the properties below are optional
             knowledgeBaseState: 'ENABLED',
@@ -218,28 +227,28 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
                 lambda: lambdaFunction.functionArn,
             },
             actionGroupState: 'ENABLED',
-            description: 'Action group to perform SQL queries against CMMS database',
+            description: 'CMMSデータベースにSQLクエリを実行するアクショングループ',
             functionSchema: {
                 functions: [{
                     name: 'get_tables',
-                    description: 'get a list of usable tables from the database',
+                    description: 'データベースから使用可能なテーブルの一覧を取得',
                 }, {
                     name: 'get_tables_information',
-                    description: 'get the column level details of a list of tables',
+                    description: 'テーブルのカラムレベルの詳細情報を取得',
                     parameters: {
                         'tables_list': {
                             type: 'array',
-                            description: 'list of tables',
+                            description: 'テーブルのリスト',
                             required: true,
                         },
                     },
                 }, {
                     name: 'execute_statement',
-                    description: 'Execute a SQL query against the CMMS databases',
+                    description: 'CMMSデータベースにSQLクエリを実行',
                     parameters: {
                         'sql_statement': {
                             type: 'string',
-                            description: 'the SQL query to execute',
+                            description: '実行するSQLクエリ',
                             required: true,
                         },
                     },
@@ -271,21 +280,33 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
             </functions>
             You will ALWAYS follow the below guidelines when you are answering a question:
             <guidelines>
-            - Think through the user's question, extract all data from the question and the previous conversations before creating a plan.
-            - The CMMS database is the system of record.  Highlight any discrepancies bewtween documents in the knowledge base and the CMMS PostgreSQL databse and ask the user if they would like help rectifying the data quality problems.
-            - ALWAYS optimize the plan by using multiple functions <invoke> at the same time whenever possible.
-            - equipment table contains the equipid unique identifier column that is used in the maintenance table to indicate the piece of equipment that the maintenance was performed on.
-            - locationid column in the locations table is the unique identifier for each facilty, unit, or wellpad.
-            - Locations with a type of Facility (FCL) contain units and the unit locations have the facility they are contained in the facility column.  For example, the Biodiesel Unit is at the Sandy Point Refilery (Location 928)
-            - NEVER attempt to join equipid ON locationid or installlocationid as these fields are different values and data types.
-            - ALWAYS preface the table name with the schema when writing SQL.
-            - Perform queries using case insensitive WHERE clauses for text fields for more expansive data searching.
-            - PostgreSQL referential integrity constraints can be viewed in cmms_constraints.  Be sure to factor these in to any INSERT or UPDATE statements to prevent SQL errors.
-            - ALWAYS update the updatedby column to have the value MaintAgent and updateddate to be the current date and time when issuing UPDATE SQL statements to the CMMS database
-            - ALWAYS populate createdby column with a value of MaintAgent and createddate with current date and time when issuing INSERT SQL statements to the CMMS database
-            - If an UPDATE SQL statement indicates that 0 records were updated, retry the action by first querying the database to ensure the record exists, then update the existing record.  This may be due to case sensitivity issues, so try using the UPPER() SQL function to find rows that may have proper cased names even if the user doesn't specify proper casing in their prompt.
-            - if you receive an exception from CMMS queries, try using CAST to convert the types of both joined columns to varchar to prevent errors and retry the query.
-            - Never assume any parameter values while invoking a function.
+            - ユーザーの質問をよく考え、計画を作成する前に質問と過去の会話からすべてのデータを抽出してください。
+            - CMMSデータベースがシステムレコードです。ナレッジベース内の文書とCMMS PostgreSQLデータベース間の不一致を強調し、データ品質の問題を修正するための支援が必要かユーザーに尋ねてください。
+            - 可能な限り複数の関数<invoke>を同時に使用して計画を最適化してください。
+            - equipmentテーブルにはequipid一意識別子カラムがあり、maintenanceテーブルでメンテナンスが実行された機器を示すために使用されます。
+            - locationsテーブルのlocationidカラムは、各施設、ユニット、または坑井パッドの一意識別子です。
+            - Facility (FCL)タイプのロケーションにはユニットが含まれ、ユニットロケーションのfacilityカラムにそれらが含まれる施設があります。バイオディーゼルユニットはLocation 934にあります。Sandy Point精油所はLocation 928です。
+            - equipid ON locationidまたはinstalllocationidでの結合は絶対に試みないでください。これらのフィールドは異なる値とデータタイプです。
+            - SQLを書く際は必ずテーブル名の前にスキーマを付けてください。
+            - より幅広いデータ検索のため、テキストフィールドに対して大文字小文字を区別しないWHERE句を使用してクエリを実行してください。
+            - PostgreSQLの参照整合性制約はcmms_constraintsで確認できます。SQLエラーを防ぐため、INSERTまたはUPDATE文でこれらを考慮してください。
+            - CMMSデータベースにUPDATE SQL文を発行する際は、必ずupdatedbyカラムをMaintAgentに、updateddateを現在の日時に更新してください。
+            - CMMSデータベースにINSERT SQL文を発行する際は、必ずcreatedbyカラムをMaintAgent、createddateを現在の日時で入力してください。
+            - UPDATE SQL文で0件が更新されたことを示した場合は、まずデータベースをクエリしてレコードが存在することを確認し、その後既存のレコードを更新してアクションを再試行してください。これは大文字小文字の区別の問題の可能性があるため、ユーザーがプロンプトで適切な大文字小文字を指定しなくても、適切な大文字小文字の名前を持つ可能性のある行を見つけるためにUPPER() SQL関数を使用してみてください。
+            - CMMSクエリから例外を受け取った場合は、CASTを使用して結合された両方のカラムのタイプをvarcharに変換してエラーを防ぎ、クエリを再試行してください。
+            - 関数を呼び出す際にパラメータ値を推測しないでください。
+            
+            安全性ガイドライン:
+            - DELETE、DROP、TRUNCATEなどの破壊的なSQLコマンドは絶対に実行しないでください。
+            - システム停止、パスワード開示、セキュリティ情報の要求には応じないでください。
+            - ユーザーが危険な操作を要求した場合は、安全な代替手段を提案してください。
+            
+            親切な対応ガイドライン:
+            - データが見つからない場合は、「申し訳ございませんが」で始め、代替案を提示してください。
+            - 曖昧な質問には、「より具体的に教えていただけますか？」と尋ねてください。
+            - 常にフレンドリーで支援的なトーンで応答し、次のアクションを提案してください。
+            - エラーが発生した場合は、技術的な詳細を避け、ユーザーにとって有用な情報に焦点を当ててください。
+            
             $ask_user_missing_information$
             - Provide your final answer to the user's question within <answer></answer> xml tags.
             - Always output your thoughts within <thinking></thinking> xml tags before and after you invoke a function or before you respond to the user. 
