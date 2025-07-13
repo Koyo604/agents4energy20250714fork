@@ -64,7 +64,9 @@ export class AuroraBedrockKnowledgeBase extends Construct {
         },
         vpc: props.vpc,
         port: 5432,
-        removalPolicy: cdk.RemovalPolicy.DESTROY
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        // Ensure Data API is properly configured
+        clusterIdentifier: `vector-store-${id.toLowerCase()}-${stackUUID}`
       });
     this.vectorStorePostgresCluster.secret?.addRotationSchedule('RotationSchedule', {
       hostedRotation: secretsmanager.HostedRotation.postgreSqlSingleUser({
@@ -97,31 +99,34 @@ export class AuroraBedrockKnowledgeBase extends Construct {
     const prepVectorStoreFunction = new lambda.Function(scope, `PrepVectorStoreFunction-${id}`, {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
-      timeout: cdk.Duration.minutes(10),
+      timeout: cdk.Duration.minutes(15),
+      retryAttempts: 3,
       code: lambda.Code.fromInline(`
           const { RDSDataClient, ExecuteStatementCommand } = require('@aws-sdk/client-rds-data');
 
           const rdsDataClient = new RDSDataClient();
 
           exports.handler = async () => {
+              // Wait for cluster to be fully available
+              await new Promise(resolve => setTimeout(resolve, 30000));
 
               const sqlCommands = [
                 /* sql */ \`
                 CREATE EXTENSION IF NOT EXISTS vector;
                 \`, /* sql */ \`
-                CREATE SCHEMA ${props.schemaName};
+                CREATE SCHEMA IF NOT EXISTS ${props.schemaName};
                 \`,/* sql */\`
-                CREATE TABLE ${props.schemaName}.${tableName} (
+                CREATE TABLE IF NOT EXISTS ${props.schemaName}.${tableName} (
                 ${primaryKeyField} uuid PRIMARY KEY,
                 ${vectorField} vector(${vectorDimensions}),
                 ${textField} text, 
                 ${metadataField} json
                 );
                 \`, /* sql */ \`
-                CREATE INDEX on ${props.schemaName}.${tableName}
+                CREATE INDEX IF NOT EXISTS idx_${tableName}_vector on ${props.schemaName}.${tableName}
                 USING hnsw (${vectorField} vector_cosine_ops);
                 \`, /* sql */ \`
-                CREATE INDEX on ${props.schemaName}.${tableName} 
+                CREATE INDEX IF NOT EXISTS idx_${tableName}_text on ${props.schemaName}.${tableName} 
                 USING gin (to_tsvector('simple', ${textField}));
                 \`
               ]
@@ -136,8 +141,16 @@ export class AuroraBedrockKnowledgeBase extends Construct {
 
                   console.log('Executing SQL command:', sqlCommand)
 
-                  const command = new ExecuteStatementCommand(params);
-                  await rdsDataClient.send(command);
+                  try {
+                      const command = new ExecuteStatementCommand(params);
+                      const result = await rdsDataClient.send(command);
+                      console.log('SQL command executed successfully:', result);
+                  } catch (error) {
+                      console.error('Error executing SQL command:', error);
+                      if (!error.message.includes('already exists')) {
+                          throw error;
+                      }
+                  }
               }
           };
           `
@@ -162,9 +175,20 @@ export class AuroraBedrockKnowledgeBase extends Construct {
         action: 'invoke',
         parameters: {
           FunctionName: prepVectorStoreFunction.functionName,
-          Payload: JSON.stringify({}), // No need to pass an event
+          Payload: JSON.stringify({}),
+          InvocationType: 'RequestResponse'
         },
-        physicalResourceId: cr.PhysicalResourceId.of('SqlExecutionResource'),
+        physicalResourceId: cr.PhysicalResourceId.of(`SqlExecutionResource-${id}-${stackUUID}`),
+      },
+      onUpdate: {
+        service: 'Lambda',
+        action: 'invoke',
+        parameters: {
+          FunctionName: prepVectorStoreFunction.functionName,
+          Payload: JSON.stringify({}),
+          InvocationType: 'RequestResponse'
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(`SqlExecutionResource-${id}-${stackUUID}`),
       },
       policy: cr.AwsCustomResourcePolicy.fromStatements([
         new iam.PolicyStatement({
@@ -172,10 +196,12 @@ export class AuroraBedrockKnowledgeBase extends Construct {
           resources: [prepVectorStoreFunction.functionArn],
         }),
       ]),
+      timeout: cdk.Duration.minutes(20)
     });
 
 
     prepVectorStore.node.addDependency(this.vectorStoreWriterNode)
+    prepVectorStore.node.addDependency(this.vectorStorePostgresCluster.secret!)
 
     const knoledgeBaseRole = new iam.Role(this, `KbRole-${id}`, {//'sqlTableKbRole', {
       assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
@@ -240,6 +266,8 @@ export class AuroraBedrockKnowledgeBase extends Construct {
       }
     });
     this.knowledgeBase.node.addDependency(prepVectorStore);
+    this.knowledgeBase.node.addDependency(this.vectorStoreWriterNode);
+    this.knowledgeBase.node.addDependency(this.vectorStorePostgresCluster.secret!);
   }
 }
 

@@ -216,7 +216,8 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         },
         vpc: props.vpc,
         port: 5432,
-        removalPolicy: cdk.RemovalPolicy.DESTROY
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        clusterIdentifier: `hydrocarbon-prod-db-${stackUUID}`
     });
     hydrocarbonProductionDb.secret?.addRotationSchedule('RotationSchedule', {
         hostedRotation: secretsmanager.HostedRotation.postgreSqlSingleUser({
@@ -507,6 +508,7 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         ]),
     });
     prodDbConfigurator.node.addDependency(writerNode)
+    prodDbConfigurator.node.addDependency(hydrocarbonProductionDb.secret!)
     prodDbConfigurator.node.addDependency(props.s3Deployment.deployedBucket) //Make sure the bucket deployment is finished before writing to the bucket
 
     // Start the knowledge base ingestion job

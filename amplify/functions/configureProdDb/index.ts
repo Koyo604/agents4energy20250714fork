@@ -17,6 +17,10 @@ export const handler = async (event: any, context: any, callback: any): Promise<
   // if (!process.env.ATHENA_SAMPLE_DATA_SOURCE_NAME) throw new Error('ATHENA_SAMPLE_DATA_SOURCE_NAME is not defined')
   if (!process.env.TABLE_DEF_KB_ID) throw new Error('TABLE_DEF_KB_ID is not defined')
   if (!process.env.TABLE_DEF_KB_DS_ID) throw new Error('TABLE_DEF_KB_DS_ID is not defined')
+  
+  // Wait for RDS cluster to be fully available
+  console.log('Waiting for RDS cluster to be ready...');
+  await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
     
 
   // if (!process.env.TABLE_DEF_KB_ID) throw new Error('TABLE_DEF_KB_ID is not defined')
@@ -41,9 +45,17 @@ export const handler = async (event: any, context: any, callback: any): Promise<
     try {
       const result = await rdsDataClient.send(command);
       console.log('SQL execution successful:', result);
+      // Add small delay between SQL executions
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
       console.error('Error executing SQL:', error);
-      throw error;
+      console.error('SQL that failed:', sql);
+      // Don't throw error for already exists errors
+      if (error.message && error.message.includes('already exists')) {
+        console.log('Resource already exists, continuing...');
+      } else {
+        throw error;
+      }
     }
   }
 
