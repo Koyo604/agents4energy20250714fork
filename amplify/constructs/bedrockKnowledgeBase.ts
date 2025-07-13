@@ -100,7 +100,7 @@ export class AuroraBedrockKnowledgeBase extends Construct {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       timeout: cdk.Duration.minutes(15),
-      retryAttempts: 3,
+      retryAttempts: 2,
       code: lambda.Code.fromInline(`
           const { RDSDataClient, ExecuteStatementCommand } = require('@aws-sdk/client-rds-data');
 
