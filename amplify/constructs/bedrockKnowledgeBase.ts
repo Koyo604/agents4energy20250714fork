@@ -99,7 +99,7 @@ export class AuroraBedrockKnowledgeBase extends Construct {
     const prepVectorStoreFunction = new lambda.Function(scope, `PrepVectorStoreFunction-${id}`, {
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
-      timeout: cdk.Duration.minutes(15),
+      timeout: cdk.Duration.minutes(10),
       retryAttempts: 2,
       code: lambda.Code.fromInline(`
           const { RDSDataClient, ExecuteStatementCommand } = require('@aws-sdk/client-rds-data');
@@ -196,7 +196,7 @@ export class AuroraBedrockKnowledgeBase extends Construct {
           resources: [prepVectorStoreFunction.functionArn],
         }),
       ]),
-      timeout: cdk.Duration.minutes(20)
+      timeout: cdk.Duration.minutes(15)
     });
 
 

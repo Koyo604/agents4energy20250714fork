@@ -100,8 +100,8 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
             minify: true,
             sourceMap: true,
         },
-        timeout: cdk.Duration.minutes(15),
-        memorySize: 3000,
+        timeout: cdk.Duration.minutes(10),
+        memorySize: 2048,
         role: lambdaLlmAgentRole,
         environment: {
             DATA_BUCKET_NAME: props.s3Bucket.bucketName,
@@ -128,7 +128,7 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
 
     // Create the main queue for processing
     const pdfProcessingQueue = new sqs.Queue(scope, 'PdfToYamlQueue', {
-        visibilityTimeout: cdk.Duration.minutes(16), // Should match or exceed lambda timeout
+        visibilityTimeout: cdk.Duration.minutes(11), // Should match or exceed lambda timeout
         deadLetterQueue: {
             queue: pdfDlQueue,
             maxReceiveCount: 3 // Number of retries before sending to DLQ
@@ -549,7 +549,7 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
             minify: true,
             sourceMap: true,
         },
-        timeout: cdk.Duration.minutes(15),
+        timeout: cdk.Duration.minutes(10),
         role: lambdaLlmAgentRole,
         environment: {
             ATHENA_WORKGROUP_NAME: athenaWorkgroup.name,

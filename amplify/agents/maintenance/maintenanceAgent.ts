@@ -96,7 +96,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
         description: 'Agents4Energy CMMSデータ投入関数 - 実行するたびにデータをリセットします',
         runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'index.handler',
-        timeout: cdk.Duration.minutes(15),
+        timeout: cdk.Duration.minutes(10),
         code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
         environment: {
             MAINT_DB_CLUSTER_ARN: maintDb.clusterArn,

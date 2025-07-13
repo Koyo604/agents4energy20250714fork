@@ -213,11 +213,11 @@ const {
 const delayFunction = new lambda.Function(productionAgentStack, 'DelayFunction', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
-  timeout: cdk.Duration.minutes(15),
-  memorySize: 3008, //increased memory size to maximum to avoid SIGKILL when there are a lot of sample files being uploaded to S3.
+  timeout: cdk.Duration.minutes(3),
+  memorySize: 512,
   code: lambda.Code.fromInline(`
     exports.handler = async () => {
-      const secondsToWait = 600
+      const secondsToWait = 120
       console.log('Waiting for ',secondsToWait,' seconds...');
       await new Promise(resolve => setTimeout(resolve, secondsToWait*1000));
       console.log('Wait complete.');

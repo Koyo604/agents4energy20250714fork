@@ -4,13 +4,15 @@ import { defineFunction } from '@aws-amplify/backend';
 export const invokeBedrockAgentFunction = defineFunction({
   name: 'invoke-bedrock-agent',
   entry: '../functions/invokeBedrockAgent.ts',
-  timeoutSeconds: 120
+  timeoutSeconds: 60,
+  memoryMB: 512
 });
 
 export const getStructuredOutputFromLangchainFunction = defineFunction({
   name: 'get-structured-output',
   entry: '../functions/getStructuredOutputFromLangchain.ts',
-  timeoutSeconds: 120,
+  timeoutSeconds: 90,
+  memoryMB: 512,
   environment: {
     // MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
     // MODEL_ID: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
@@ -22,7 +24,8 @@ export const getStructuredOutputFromLangchainFunction = defineFunction({
 export const productionAgentFunction = defineFunction({
   name: "production-agent-function",
   entry: '../functions/productionAgentFunction/index.ts',
-  timeoutSeconds: 900,
+  timeoutSeconds: 180,
+  memoryMB: 1024,
   environment: {
     // STRUCTURED_OUTPUT_MODEL_ID: 'amazon.nova-lite-v1:0',
     STRUCTURED_OUTPUT_MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0',
@@ -32,7 +35,7 @@ export const productionAgentFunction = defineFunction({
     // MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0'
     // MODEL_ID: 'us.amazon.nova-pro-v1:0',
     // MODEL_ID: 'amazon.nova-lite-v1:0'
-    FILE_PROCESSING_CONCURRENCY: '10'
+    FILE_PROCESSING_CONCURRENCY: '5'
   },
   runtime: 20
 });
@@ -40,7 +43,8 @@ export const productionAgentFunction = defineFunction({
 export const planAndExecuteAgentFunction = defineFunction({
   name: "plan-and-execute-agent",
   entry: '../functions/planAndExecuteAgent/index.ts',
-  timeoutSeconds: 900,
+  timeoutSeconds: 180,
+  memoryMB: 1024,
   environment: {
     // MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
     // MODEL_ID: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
