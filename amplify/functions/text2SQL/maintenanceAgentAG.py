@@ -71,14 +71,16 @@ def get_tables_information(t: list[str]):
             "昨年": "DATE_TRUNC('year', CURRENT_DATE - INTERVAL '1 year')"
         },
         "important_queries": {
-            "safety_critical": "SELECT * FROM equipment WHERE safetycritical = 'TRUE'",
-            "biodiesel_equipment": "SELECT * FROM equipment WHERE UPPER(equipname) LIKE '%バイオディーゼル%' OR installlocationid = 934",
-            "recent_maintenance": "SELECT * FROM maintenance WHERE actualDateStart >= CURRENT_DATE - INTERVAL '30 days'",
-            "equipment_with_maintenance": "SELECT e.equipname, e.equipid, e.safetycritical, m.maintname, m.actualDateStart, m.estcost FROM equipment e LEFT JOIN maintenance m ON e.equipid = m.equipid ORDER BY m.actualDateStart DESC",
-            "maintenance_by_type": "SELECT mt.mainttypename, COUNT(*) as count, AVG(m.effortHours) as avg_hours FROM maintenance m JOIN mainttypes mt ON m.mainttypeid = mt.mainttypeid GROUP BY mt.mainttypename",
-            "equipment_by_location": "SELECT l.locationname, COUNT(e.equipid) as equipment_count FROM locations l LEFT JOIN equipment e ON l.locationid = e.installlocationid GROUP BY l.locationname",
-            "high_cost_maintenance": "SELECT * FROM maintenance WHERE estcost > 10000 ORDER BY estcost DESC",
-            "overdue_maintenance": "SELECT * FROM maintenance WHERE planneddateend < CURRENT_DATE AND statusid != 'COM'"
+            "safety_critical": "SELECT * FROM public.equipment WHERE safetycritical = 'TRUE'",
+            "biodiesel_equipment": "SELECT * FROM public.equipment WHERE UPPER(equipname) LIKE '%バイオディーゼル%' OR installlocationid = 934",
+            "biodiesel_tanks": "SELECT equipid, equipname, equiplongdesc, installlocationid FROM public.equipment WHERE installlocationid = 934 AND UPPER(equipname) LIKE '%タンク%'",
+            "biodiesel_unit_all": "SELECT equipid, equipname, equiplongdesc, manufacturer, model FROM public.equipment WHERE installlocationid = 934",
+            "recent_maintenance": "SELECT * FROM public.maintenance WHERE actualdatestart >= CURRENT_DATE - INTERVAL '30 days'",
+            "equipment_with_maintenance": "SELECT e.equipname, e.equipid, e.safetycritical, m.maintname, m.actualdatestart, m.estcost FROM public.equipment e LEFT JOIN public.maintenance m ON e.equipid = m.equipid ORDER BY m.actualdatestart DESC",
+            "maintenance_by_type": "SELECT mt.mainttypename, COUNT(*) as count, AVG(m.efforthours) as avg_hours FROM public.maintenance m JOIN public.mainttypes mt ON m.mainttypeid = mt.mainttypeid GROUP BY mt.mainttypename",
+            "equipment_by_location": "SELECT l.locname, COUNT(e.equipid) as equipment_count FROM public.locations l LEFT JOIN public.equipment e ON l.locationid = e.installlocationid GROUP BY l.locname",
+            "high_cost_maintenance": "SELECT * FROM public.maintenance WHERE estcost > 10000 ORDER BY estcost DESC",
+            "overdue_maintenance": "SELECT * FROM public.maintenance WHERE planneddateend < CURRENT_DATE AND statusid != 'COM'"
         }
     }
     
@@ -91,6 +93,7 @@ def get_question_suggestions(category="general"):
             "equipment": [
                 "すべての機器を教えてください",
                 "バイオディーゼルユニットの設備を教えてください",
+                "バイオディーゼルユニットにはいくつのタンクがありますか？",
                 "安全上重要な機器はどれですか？"
             ],
             "maintenance": [
@@ -102,6 +105,11 @@ def get_question_suggestions(category="general"):
     }
     
     return {"suggestions": mapping_info["suggested_questions"]}
+
+def get_biodiesel_equipment():
+    """Get biodiesel unit equipment information"""
+    sql = "SELECT equipid, equipname, equiplongdesc, manufacturer, model FROM public.equipment WHERE installlocationid = 934"
+    return execute_statement(sql)
 
 def detect_vague_question(user_input):
     """Detect if user question is too vague"""
@@ -216,11 +224,19 @@ def optimize_japanese_sql(sql):
         sql = re.sub(r"(\w+)\s+LIKE\s+'([^']+)'", r"UPPER(\1) LIKE UPPER('\2')", sql, flags=re.IGNORECASE)
     
     # Ensure schema prefix for all table names
-    common_tables = ['equipment', 'maintenance', 'locations', 'mainttypes', 'statustypes']
+    common_tables = ['equipment', 'maintenance', 'locations', 'mainttypes', 'statustypes', 'equipmenttypes', 'businessunits']
     for table in common_tables:
         if f' {table} ' in sql.lower() and f'public.{table}' not in sql.lower():
             sql = sql.replace(f' {table} ', f' public.{table} ')
             sql = sql.replace(f' {table.upper()} ', f' public.{table} ')
+    
+    # Handle biodiesel-specific queries
+    if 'バイオディーゼル' in sql and 'タンク' in sql:
+        # Specific query for biodiesel tanks
+        sql = "SELECT equipid, equipname, equiplongdesc, installlocationid FROM public.equipment WHERE installlocationid = 934 AND (UPPER(equipname) LIKE '%タンク%' OR UPPER(equipname) LIKE '%TANK%')"
+    elif 'バイオディーゼルユニット' in sql:
+        # All equipment in biodiesel unit
+        sql = "SELECT equipid, equipname, equiplongdesc, manufacturer, model FROM public.equipment WHERE installlocationid = 934"
     
     return sql
 
@@ -262,6 +278,12 @@ def lambda_handler(event, context):
                 category = param["value"]
         suggestions = get_question_suggestions(category)
         responseBody = {"TEXT": {"body": f"<question_suggestions>{suggestions}</question_suggestions>"}}
+    
+    # Get biodiesel equipment information
+    elif function == "get_biodiesel_equipment":
+        sql = "SELECT equipid, equipname, equiplongdesc, manufacturer, model, installlocationid FROM public.equipment WHERE installlocationid = 934"
+        results = execute_statement(sql)
+        responseBody = {"TEXT": {"body": f"<biodiesel_equipment>{results}</biodiesel_equipment>"}}
     
     # Business data queries
     else:

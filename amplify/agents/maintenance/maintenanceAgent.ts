@@ -201,7 +201,12 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
         安全性に関する洞察を提供してください。
         
         重要な機器情報:
-        - バイオディーゼルユニットはLocation 934にあり、K-901(バイオディーゼル供給タンク)、K-902(バイオディーゼル供給タンク)、R-901(バイオディーゼル反応器)があります
+        - バイオディーゼルユニットはLocation 934にあり、以下の機器があります：
+          * K-901: バイオディーゼル供給タンク（2000ガロン トリグリセリドタンク）
+          * K-902: バイオディーゼル供給タンク（2000ガロン メタノールタンク）
+          * R-901: バイオディーゼル反応器（トリグリセリドとメタノール+触媒の混合）
+          * SP-94: バイオディーゼル分離器（残留メタノールを再処理のために分離）
+        - バイオディーゼルユニットには合計2つのタンクがあります（K-901とK-902）
         - 安全上重要な機器はsafetycritical='TRUE'で検索できます
         - 熱交換器はH-で始まる機器IDで、冷却塔はH-501からH-504です
         - 原油ポンプはP-101、P-102で、原油供給タンクはK-101からK-104です
@@ -242,6 +247,9 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
                             required: true,
                         },
                     },
+                }, {
+                    name: 'get_biodiesel_equipment',
+                    description: 'バイオディーゼルユニットの機器情報を取得（タンク、反応器、分離器など）',
                 }, {
                     name: 'execute_statement',
                     description: 'CMMSデータベースにSQLクエリを実行',
