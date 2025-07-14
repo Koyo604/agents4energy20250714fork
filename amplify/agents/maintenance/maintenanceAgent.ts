@@ -29,8 +29,8 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const stackUUID = cdk.Names.uniqueResourceName(scope, { maxLength: 3 }).toLowerCase().replace(/[^a-z0-9-_]/g, '').slice(-3);
     const defaultDatabaseName = 'maintdb';
     // const foundationModel = 'anthropic.claude-3-sonnet-20240229-v1:0'; // Direct access in us-east-1
-    const foundationModel = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'; // Cross-region inference
-    // const foundationModel = 'us.anthropic.claude-sonnet-4-20250514-v1:0'; // Cross-region inference
+    // const foundationModel = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'; // Cross-region inference
+    const foundationModel = 'us.anthropic.claude-sonnet-4-20250514-v1:0'; // Cross-region inference
     const agentName = `A4E-Maintenance-${stackUUID}`;
     const agentRoleName = `AmazonBedrockExecutionRole_A4E_Maintenance-${stackUUID}`;
     const agentDescription = 'エネルギー業界のメンテナンスワークフロー用エージェント';
