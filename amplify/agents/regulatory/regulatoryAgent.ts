@@ -99,7 +99,7 @@ export function regulatoryAgentBuilder(scope: Construct, props: BedrockAgentBuil
         agentName: `${resourcePrefix}-agent-${stackUUID}`,
         description: props.description || 'This agent is designed to help with regulatory compliance.',
         instruction: props.instruction || defaultInstruction,
-        foundationModel: props.modelId || 'anthropic.claude-3-5-sonnet-20241022-v2:0',
+        foundationModel: props.modelId || 'anthropic.claude-sonnet-4-20250514-v1:0',
         agentResourceRoleArn: regulatoryAgentRole.roleArn,
         autoPrepare: true,
         knowledgeBases: [{
