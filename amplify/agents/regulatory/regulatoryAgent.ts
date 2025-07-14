@@ -73,19 +73,19 @@ export function regulatoryAgentBuilder(scope: Construct, props: BedrockAgentBuil
     props.s3Bucket.grantRead(regulatoryAgentRole);
     
     // Default instruction for the regulatory agent
-    const defaultInstruction = `You are a helpful regulatory assistant that uses your knowledge base to answer user questions. 
-    Always answer the question as factually correct as possible and cite your sources from your knowledge base. 
-    When providing regulatory guidance:
-    1. Always reference specific regulations or documents from the knowledge base
-    2. Indicate if any information might be outdated
-    3. Suggest related regulatory requirements the user should consider
-    4. If uncertain, recommend consulting official regulatory bodies
-    5. Provide context for why specific regulations exist when relevant`;
+    const defaultInstruction = `あなたはナレッジベースを使用してユーザーの質問に答える親切な規制アシスタントです。
+    常に可能な限り事実に基づいて正確に質問に答え、ナレッジベースからの情報源を引用してください。
+    規制ガイダンスを提供する際は：
+    1. 常にナレッジベースから特定の規制や文書を参照してください
+    2. 情報が古い可能性がある場合は示してください
+    3. ユーザーが検討すべき関連する規制要件を提案してください
+    4. 不確実な場合は、公式の規制機関への相談を推奨してください
+    5. 関連する場合は特定の規制が存在する理由の背景を提供してください`;
 
     // Create regulatory knowledge base and s3 data source for the KB
     const regulatoryKnowledgeBase = new cdkLabsBedrock.KnowledgeBase(scope, `KB-regulatory`, {
         embeddingsModel: cdkLabsBedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-        instruction: `You are a helpful question answering assistant. You answer user questions factually and honestly related to regulatory requirements in oil and gas facilities globally`,
+        instruction: `あなたは世界の石油・ガス施設の規制要件に関してユーザーの質問に事実に基づいて正直に答える親切な質問応答アシスタントです`,
         description: 'Regulatory Knowledge Base',
     });
     const s3docsDataSource = regulatoryKnowledgeBase.addS3DataSource({

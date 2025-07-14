@@ -252,7 +252,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                 disableContentPaddings
                 tabs={[
                     {
-                        label: "Chat Agents",
+                        label: "チャットエージェント",
                         id: "first",
                         content:
                             <AppLayout
@@ -313,7 +313,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                                                                         {
                                                                             status: (step.stepType === 'past' ? "success" : "loading"),
                                                                             header: stepContent.title,
-                                                                            statusIconAriaLabel: (step.stepType === 'past' ? "Success" : "Loading")
+                                                                            statusIconAriaLabel: (step.stepType === 'past' ? "完了" : "実行中")
                                                                         }
                                                                     ]}
                                                                 />
@@ -331,7 +331,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                                     <SideNavigation
                                         header={{
                                             href: '#',
-                                            text: 'Sessions',
+                                            text: 'セッション',
                                         }}
                                         items={groupedChatSessions}
                                     />
@@ -349,7 +349,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                                                 gap: '1rem',
                                                 alignItems: 'flex-start'
                                             }}>
-                                                <h3>Select an agent to chat with:</h3>
+                                                <h3>チャットするエージェントを選択してください：</h3>
                                                 {
                                                     Object.entries(defaultAgents)
                                                         .map(
@@ -387,7 +387,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                             />
                     },
                     {
-                        label: "Glossary",
+                        label: "用語集",
                         id: "second",
                         content:
                             <div className='glossary-container'>
@@ -403,7 +403,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                             </div>,
                     },
                     {
-                        label: "Files",
+                        label: "ファイル",
                         id: "fourth",
                         content:
                             <div className='links-container'>

@@ -1,21 +1,17 @@
-# Agents4Energy Technical Inventory 
+# Agents4Energy 技術インベントリ
 
-This document provides details of the resources deployed in the Agents4Energy (A4E) CDK stack as deployed through Amplify main branch connected to GitHub aws-samples repository as of Feb 2025.  
-The amount of data and specific resources that are deployed will consume approximately $550/month of AWS spend.  Approximately 63% of the spend is OpenSearch Serverless, 25% is RDS, and other 
-services make up the remaining 12%.  This estimate has the potential to be higher based on user-Agent interaction and addition of more data, so deployments should be done with caution and 
-cleaned up after use to prevent unexpected AWS billing charges.
+このドキュメントは、2025年2月時点でGitHub aws-samplesリポジトリに接続されたAmplify mainブランチを通じてデプロイされたAgents4Energy (A4E) CDKスタックのリソースの詳細を提供します。
+デプロイされるデータ量と特定のリソースは、月額約$550のAWS支出を消費します。支出の約63%はOpenSearch Serverless、25%はRDS、その他のサービスが残りの12%を構成します。この見積もりはユーザーとエージェントのインタラクションやデータの追加によって高くなる可能性があるため、デプロイメントは注意して行い、予期しないAWS請求料金を防ぐために使用後はクリーンアップしてください。
 
-## Overview
-Agents4Energy is an Amazon Bedrock-based solution designed to enable AWS customers and partners to deploy sample agents tailored for oil & gas and power/utilities workloads. 
-This documentation provides a comprehensive overview of the technical resources deployed as part of the CDK Amplify application, intended for review by technical teams to 
-better understand the inventory of resources deployed by the project.  The Agents4Energy solution leverages several AWS services to create a robust, scalable, and secure 
-environment for deploying and managing agents. The architecture is designed to be modular, allowing for easy extension and integration with other AWS services.
+## 概要
+Agents4Energyは、AWSのお客様とパートナーが石油・ガスおよび電力/ユーティリティワークロードに特化したサンプルエージェントをデプロイできるように設計されたAmazon Bedrockベースのソリューションです。
+このドキュメントは、CDK Amplifyアプリケーションの一部としてデプロイされる技術リソースの包括的な概要を提供し、技術チームがプロジェクトによってデプロイされるリソースのインベントリをよりよく理解できるように意図されています。Agents4Energyソリューションは複数のAWSサービスを活用して、エージェントのデプロイと管理のための堅牢でスケーラブル、かつセキュアな環境を作成します。アーキテクチャはモジュラー設計で、他のAWSサービスとの簡単な拡張と統合を可能にします。
 
 
 
-## AWS Resource Deployment Summary
+## AWSリソースデプロイメント概要
 ### Amazon Bedrock
-Amazon Bedrock provides the underlying infrastructure and services required for agent deployment. Bedrock Agents and Knowledge Bases are deployed as part of Agents4Energy.
+Amazon Bedrockはエージェントデプロイメントに必要な基盤インフラとサービスを提供します。BedrockエージェントとナレッジベースがAgents4Energyの一部としてデプロイされます。
 
 * Resources:
     * Bedrock Knowledge Bases: 5

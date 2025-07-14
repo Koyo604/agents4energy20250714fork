@@ -1,0 +1,7 @@
+-- Insert sample incident data for September 2024
+INSERT INTO Maintenance (MaintID, MaintTypeID, EquipID, MaintName, MaintLongDesc, MaintNotes, WorkOrderID, EffortHours, EstCost, DowntimeReq, TechnicianID, ResponsibleID, RequiresPermit, StatusID, PlannedDateStart, PlannedDateEnd, ActualDateStart, ActualDateEnd, IncidentSeverity, RootCause, CreatedBy, CreatedDate, UpdatedBy, UpdatedDate) VALUES
+(9001, 'CM', 'K-901', 'バイオディーゼル供給タンク緊急修理', 'K-901タンクの圧力異常により緊急停止。圧力リリーフバルブの交換が必要。', '2024年9月15日午前3時に圧力アラーム発生。安全プロトコルに従い即座にユニット停止。バルブ交換後、システム正常復帰確認。', 'WO-240915-001', 12, 8500.00, true, 'TECH001', 'MAINT_MGR', true, 'COM', '2024-09-15', '2024-09-15', '2024-09-15', '2024-09-15', 'HIGH', '圧力リリーフバルブの経年劣化による機能不全', 'MaintAgent', '2024-09-15 03:15:00', 'MaintAgent', '2024-09-15 15:30:00'),
+
+(9002, 'CM', 'R-901', 'バイオディーゼル反応器温度制御異常', 'R-901反応器の温度制御システム故障。温度センサーと制御バルブの交換実施。', '2024年9月22日に反応器温度が設定値を超過。自動制御システムが作動し安全停止。センサー校正とバルブ交換により復旧。', 'WO-240922-003', 16, 12000.00, true, 'TECH002', 'MAINT_MGR', true, 'COM', '2024-09-22', '2024-09-23', '2024-09-22', '2024-09-23', 'MEDIUM', '温度センサーの校正ずれと制御バルブの内部部品摩耗', 'MaintAgent', '2024-09-22 10:45:00', 'MaintAgent', '2024-09-23 14:20:00'),
+
+(9003, 'CM', 'SP-94', 'バイオディーゼル分離器ポンプ故障', 'SP-94分離器のメタノール回収ポンプが異常振動により停止。ベアリング交換実施。', '2024年9月28日にポンプ異常振動を検知。予防的にユニット停止し点検実施。ベアリング摩耗を確認し交換。', 'WO-240928-007', 8, 4500.00, true, 'TECH003', 'MAINT_MGR', false, 'COM', '2024-09-28', '2024-09-28', '2024-09-28', '2024-09-28', 'LOW', 'ポンプベアリングの通常摩耗', 'MaintAgent', '2024-09-28 08:30:00', 'MaintAgent', '2024-09-28 16:45:00');

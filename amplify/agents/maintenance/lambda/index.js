@@ -36,6 +36,7 @@ const sqlCommands = [
     fs.readFileSync('./insertCMMSDataMaintenanceDS.sql', 'utf8'),
     fs.readFileSync('./insertCMMSDataMaintenanceMS.sql', 'utf8'),
     fs.readFileSync('./insertCMMSDataMaintenanceINS.sql', 'utf8'),
+    fs.readFileSync('./insertCMMSDataMaintenanceIncidents.sql', 'utf8'),
 ];
 
 exports.handler = async (event) => {

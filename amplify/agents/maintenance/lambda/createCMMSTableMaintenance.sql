@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS Maintenance (
                 , EquipID varchar(20)
                 , MaintName varchar(100) NOT NULL
                 , MaintLongDesc varchar(2048)
+                , MaintNotes varchar(4000)  -- Added for incident notes and details
                 , WorkOrderID varchar(20)
                 , EffortHours int
                 , EstCost numeric(10,2)
@@ -16,6 +17,8 @@ CREATE TABLE IF NOT EXISTS Maintenance (
                 , PlannedDateEnd date
                 , ActualDateStart date
                 , ActualDateEnd date
+                , IncidentSeverity varchar(20)  -- Added for incident classification
+                , RootCause varchar(1000)       -- Added for incident analysis
                 , CreatedBy varchar(50) DEFAULT 'AWS'
                 , CreatedDate timestamp DEFAULT CURRENT_TIMESTAMP
                 , UpdatedBy varchar(50) DEFAULT 'AWS'

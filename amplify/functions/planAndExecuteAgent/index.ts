@@ -97,7 +97,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
     })
 
     await publishTokenStreamChunk({
-        tokenStreamChunk: new AIMessageChunk({content: "Generating new plan ...\n\n"}),//This is just meant to show something is happening.
+        tokenStreamChunk: new AIMessageChunk({content: "新しいプランを生成中...\n\n"}),//This is just meant to show something is happening.
         tokenIndex: -1,
         amplifyClientWrapper: amplifyClientWrapper
     })
@@ -181,22 +181,22 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
 
 
         const replannerPrompt = ChatPromptTemplate.fromTemplate(
-            `For the given objective, come up with a simple step by step plan.
-            This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps.
-            The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.
-            Favor assigning the role of ai to human if an available tool may be able to resolve the step.
+            `与えられた目標に対して、シンプルなステップバイステップのプランを作成してください。
+            このプランは個別のタスクで構成され、正しく実行されれば正しい答えが得られるものである必要があります。不要なステップは追加しないでください。
+            最終ステップの結果が最終答えになる必要があります。各ステップに必要な情報がすべて含まれていることを確認し、ステップを飛ばさないでください。
+            利用可能なツールでステップを解決できる場合は、aiよりもhumanの役割を割り当てることを優先してください。
 
-            Your objective was this:
+            あなたの目標はこれでした：
             {objective}
 
-            Your original plan (if any) was this:
+            あなたの元のプラン（ある場合）はこれでした：
             {plan}
 
-            You have currently done the follow steps:
+            現在までに完了したステップ：
             {pastSteps}
 
-            Update your plan accordingly.
-            Only add steps to the plan that still NEED to be done. Do not return previously done steps as part of the plan.`.replace(/^\s+/gm, ''),
+            プランをそれに応じて更新してください。
+            まだ実行する必要があるステップのみをプランに追加してください。以前に完了したステップをプランの一部として返さないでください。`.replace(/^\s+/gm, ''),
         );
 
         const replanner = replannerPrompt.pipe(planningModel);
@@ -206,15 +206,15 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
         ///////////////////////////////////////////////
 
         const responderPrompt = ChatPromptTemplate.fromTemplate(
-            `Respond to the user in markdown format based on the origional objective and completed steps.
+            `元の目標と完了したステップに基づいて、ユーザーにマークダウン形式で日本語で回答してください。
 
-            Your objective was this:
+            あなたの目標はこれでした：
             {input}
 
-            The next steps (if any) are this:
+            次のステップ（ある場合）はこれです：
             {plan}
 
-            You have currently done the follow steps:
+            現在までに完了したステップ：
             {pastSteps}
             `.replace(/^\s+/gm, ''),
         );

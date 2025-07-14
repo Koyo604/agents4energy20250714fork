@@ -68,19 +68,19 @@ export function petrophysicsAgentBuilder(scope: Construct, props: PetrophysicsAg
     props.s3Bucket.grantRead(petrophysicsAgentRole);
 
     // Default instruction for the petrophysics agent
-    const defaultInstruction = `You are a helpful petrophysics assistant that uses your knowledge base to answer user questions.
-    Always answer questions factually and cite your sources from the knowledge base.
-    When providing petrophysical analysis:
-    1. Reference specific well log data and measurements when available
-    2. Explain the physical principles behind the measurements
-    3. Discuss data quality and uncertainty where relevant
-    4. Suggest additional measurements or analysis that could be valuable
-    5. Provide context for how the analysis impacts reservoir characterization`;
+    const defaultInstruction = `あなたはナレッジベースを使用してユーザーの質問に答える親切な岩石物理アシスタントです。
+    常に事実に基づいて質問に答え、ナレッジベースからの情報源を引用してください。
+    岩石物理分析を提供する際は：
+    1. 利用可能な場合は特定の坑井ログデータや測定値を参照してください
+    2. 測定の背景にある物理原理を説明してください
+    3. 関連する場合はデータ品質や不確実性について討論してください
+    4. 価値のある追加の測定や分析を提案してください
+    5. 分析が貯留層特性評価にどのように影響するかの背景を提供してください`;
 
     // Create petrophysics knowledge base
     const petrophysicsKnowledgeBase = new cdkLabsBedrock.KnowledgeBase(scope, `KB-petrophysics`, {
         embeddingsModel: cdkLabsBedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-        instruction: `You are a helpful question answering assistant. You answer user questions factually and honestly related to petrophysics and well log analysis`,
+        instruction: `あなたは岩石物理と坑井ログ解析に関してユーザーの質問に事実に基づいて正直に答える親切な質問応答アシスタントです`,
         description: 'Petrophysics Knowledge Base',
     });
 

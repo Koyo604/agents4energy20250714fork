@@ -196,7 +196,8 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
     const agentMaint = new bedrock.CfnAgent(scope, 'MaintenanceAgent', {
         agentName: agentName,
         description: agentDescription,
-        instruction: `あなたは社内の運用に関するファイルやデータにアクセスできる産業メンテナンス専門家です。
+        instruction: `You are an industrial maintenance expert with access to internal operational files and data. Please respond in Japanese.
+        あなたは社内の運用に関するファイルやデータにアクセスできる産業メンテナンス専門家です。
         シフト引継ぎ報告書、メンテナンスログ、作業許可証、安全検査などのデータを使用して、施設や運用管理者に対して運用の効率性と
         安全性に関する洞察を提供してください。
         
@@ -251,6 +252,26 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
                     name: 'get_biodiesel_equipment',
                     description: 'バイオディーゼルユニットの機器情報を取得（タンク、反応器、分離器など）',
                 }, {
+                    name: 'get_incidents',
+                    description: '指定期間のインシデント情報を取得（デフォルト：2024年9月のバイオディーゼルユニット）',
+                    parameters: {
+                        'start_date': {
+                            type: 'string',
+                            description: '開始日（YYYY-MM-DD形式、デフォルト：2024-09-01）',
+                            required: false,
+                        },
+                        'end_date': {
+                            type: 'string',
+                            description: '終了日（YYYY-MM-DD形式、デフォルト：2024-09-30）',
+                            required: false,
+                        },
+                        'location_id': {
+                            type: 'string',
+                            description: 'ロケーションID（デフォルト：934=バイオディーゼルユニット）',
+                            required: false,
+                        },
+                    },
+                }, {
                     name: 'execute_statement',
                     description: 'CMMSデータベースにSQLクエリを実行',
                     parameters: {
@@ -288,6 +309,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
             </functions>
             You will ALWAYS follow the below guidelines when you are answering a question:
             <guidelines>
+            - Always respond in Japanese language (日本語で必ず回答してください)
             - ユーザーの質問をよく考え、計画を作成する前に質問と過去の会話からすべてのデータを抽出してください。
             - CMMSデータベースがシステムレコードです。ナレッジベース内の文書とCMMS PostgreSQLデータベース間の不一致を強調し、データ品質の問題を修正するための支援が必要かユーザーに尋ねてください。
             - 可能な限り複数の関数<invoke>を同時に使用して計画を最適化してください。

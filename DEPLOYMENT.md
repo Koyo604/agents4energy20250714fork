@@ -1,48 +1,48 @@
-# Solution Deployment
-The following instructions show how to deploy Agents4Energy (A4E) in your AWS account for experimentation and testing.  This process takes approximately an hour, and requires an AWS account with administrative access.  All of the sample agents, configuration, AWS resources, and sample data used in the public demonstration site are provided.  Please be aware that deployment into your AWS account will create industry sample resources that incur AWS costs even if they are not used.  
+# ソリューションデプロイメント
+以下の手順では、実験とテストのためにAWSアカウントにAgents4Energy (A4E)をデプロイする方法を説明します。このプロセスには約1時間かかり、管理者アクセス権限を持つAWSアカウントが必要です。パブリックデモサイトで使用されているすべてのサンプルエージェント、設定、AWSリソース、サンプルデータが提供されます。AWSアカウントへのデプロイメントにより、使用されていなくてもAWSコストが発生する業界サンプルリソースが作成されることにご注意ください。
 
-<span style="color: red; font-weight: bold;">Once work with this project is complete, it is recommended to delete the CloudFormation stack if you no longer need Agents4Energy to prevent ongoing cloud costs which are approximately $500/month with the sample agents and supporting resources (as of March 2025).</span>
+<span style="color: red; font-weight: bold;">このプロジェクトでの作業が完了したら、Agents4Energyが不要になった場合はCloudFormationスタックを削除して、継続的なクラウドコスト（サンプルエージェントとサポートリソースで月額約$500、2025年3月時点）を防ぐことをお勧めします。</span>
 
-1. Fork the Agents4Energy GitHub repository to create a working version of the code 
+1. Agents4Energy GitHubリポジトリをフォークしてコードの作業版を作成します
 
-2. Login to your AWS account navigate to Model Access in Amazon Bedrock
+2. AWSアカウントにログインし、Amazon Bedrockのモデルアクセスに移動します
 
 ![Model Access](assets/images/A4E-Deploy01.png)
 
-3. Enable the desired foundation models for use with your agentic workflows (select all)
+3. エージェントワークフローで使用する希望の基盤モデルを有効化します（すべて選択）
 
 ![Enable Models](assets/images/A4E-Deploy02.png)
 
-4. Access should be granted immediately
+4. アクセスはすぐに許可されるはずです
 
 ![Access Granted](assets/images/A4E-Deploy03.png)
 
-5. Test the models in the Chat/Text playground of your desired region to make sure LLMs are working
+5. 希望するリージョンのチャット/テキストプレイグラウンドでモデルをテストし、LLMが動作することを確認します
 
 ![Chat Playground](assets/images/A4E-Deploy04.png)
 
-6. Navigate to AWS Amplify and click Deploy an app
+6. AWS Amplifyに移動し、「アプリをデプロイ」をクリックします
 
 ![Amplify Landing Page](assets/images/A4E-Deploy05.png)
 
-7. The Amplify Gen2 app will be linked to the GitHub url of the fork created in Step 1
+7. Amplify Gen2アプリはステップ1で作成したフォークのGitHub URLにリンクされます
 
 ![Amplify Landing Page](assets/images/A4E-Deploy06.png)
 
-8. This example shows the main branch which can also be deployed if you don't plan to make any changes - keep in mind this will automatically be updated with future changes in A4E main branch repository
+8. この例ではmainブランチを示しています。変更を加える予定がない場合はこれをデプロイできますが、A4E mainブランチリポジトリの将来の変更で自動的に更新されることにご注意ください
 
 ![Amplify Landing Page](assets/images/A4E-Deploy07.png)
 
-9. Amplify provides configuration of your build and service role policies
+9. Amplifyはビルドとサービスロールポリシーの設定を提供します
 
 ![Amplify Landing Page](assets/images/A4E-Deploy08.png)
 
-10. Make sure to update the Advanced Settings to use Custom Build Image **aws/codebuild/amazonlinux2-x86_64-standard:5.0** and add a Key for **_BUILD_TIMEOUT** of 120 minutes
+10. 高度な設定でカスタムビルドイメージ **aws/codebuild/amazonlinux2-x86_64-standard:5.0** を使用し、**_BUILD_TIMEOUT** のキーを120分で追加することを確認してください
 
 ![Amplify Landing Page](assets/images/A4E-Deploy09.png)
 
-11. Click "Save and deploy" to start the deployment.  
-###  <span style="color:red">**THIS STEP WILL BEGIN TO CREATE AGENTS4ENERGY AWS RESOURCES AND INCUR COSTS IN YOUR AWS ACCOUNT!**</span>
+11. 「保存してデプロイ」をクリックしてデプロイメントを開始します。
+###  <span style="color:red">**このステップでAGENTS4ENERGY AWSリソースの作成が開始され、AWSアカウントにコストが発生します！**</span>
 
 ![Amplify Landing Page](assets/images/A4E-Deploy10.png)
 

@@ -242,7 +242,7 @@ export class AuroraBedrockKnowledgeBase extends Construct {
     this.knowledgeBase = new bedrock.CfnKnowledgeBase(this, "KnowledgeBase", {
       name: `${id.slice(0, 60)}-${stackUUID}`,
       roleArn: knoledgeBaseRole.roleArn,
-      description: 'This knowledge base stores sql table definitions',
+      description: 'このナレッジベースはSQLテーブル定義を格納します',
       knowledgeBaseConfiguration: {
         type: 'VECTOR',
         vectorKnowledgeBaseConfiguration: {

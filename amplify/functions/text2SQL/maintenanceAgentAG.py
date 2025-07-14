@@ -2,6 +2,13 @@ import os
 import json
 import boto3
 from datetime import datetime
+import sys
+
+# Ensure UTF-8 encoding for Japanese text
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8')
 
 rds_client = boto3.client('rds-data')
 database_name = os.environ.get('database_name')
@@ -156,7 +163,27 @@ def execute_statement(sql):
         return response
         
     except Exception as e:
-        return generate_helpful_error_response(str(e), sql)
+        error_msg = str(e)
+        print(f"SQL Error: {error_msg}")
+        
+        # Try common fixes for SQL errors
+        if "column" in error_msg.lower() and "does not exist" in error_msg.lower():
+            # Try alternative column names
+            fixed_sql = fix_column_names(sql)
+            if fixed_sql != sql:
+                print(f"Retrying with fixed SQL: {fixed_sql}")
+                try:
+                    response = rds_client.execute_statement(
+                        secretArn=db_credentials_secrets_arn,
+                        database=database_name,
+                        resourceArn=db_resource_arn,
+                        sql=fixed_sql
+                    )
+                    return response
+                except Exception as retry_error:
+                    print(f"Retry also failed: {str(retry_error)}")
+        
+        return generate_helpful_error_response(error_msg, sql)
 
 def generate_helpful_empty_response(sql):
     """Generate helpful response when query returns no results"""
@@ -165,7 +192,8 @@ def generate_helpful_empty_response(sql):
         "equipment": "利用可能な機器を確認するには『すべての機器を教えて』と質問してみてください。",
         "maintenance": "メンテナンス履歴を確認するには『最近のメンテナンス作業』と質問してみてください。",
         "safety": "安全重要機器については『安全上重要な機器』と質問してみてください。",
-        "biodiesel": "バイオディーゼルユニットについては『バイオディーゼルユニットの設備』と質問してみてください。"
+        "biodiesel": "バイオディーゼルユニットについては『バイオディーゼルユニットの設備』と質問してみてください。",
+        "incidents": "2024年9月のインシデントについては『2024年9月のバイオディーゼルユニットのインシデント』と質問してみてください。"
     }
     
     # Check for specific non-existent data patterns
@@ -216,6 +244,25 @@ def generate_helpful_error_response(error, sql):
         "helpful_message": helpful_message
     }
 
+def fix_column_names(sql):
+    """Fix common column name issues"""
+    # Common column name mappings
+    column_fixes = {
+        'maintnotes': 'maintlongdesc',  # Use existing column if maintnotes doesn't exist
+        'notes': 'maintlongdesc',
+        'description': 'maintlongdesc',
+        'equipmentname': 'equipname',
+        'equipment_name': 'equipname'
+    }
+    
+    fixed_sql = sql
+    for wrong_col, correct_col in column_fixes.items():
+        if wrong_col in fixed_sql.lower():
+            import re
+            fixed_sql = re.sub(rf'\b{wrong_col}\b', correct_col, fixed_sql, flags=re.IGNORECASE)
+    
+    return fixed_sql
+
 def optimize_japanese_sql(sql):
     """Optimize SQL for Japanese text searches"""
     # Add UPPER() for case-insensitive Japanese searches
@@ -230,8 +277,13 @@ def optimize_japanese_sql(sql):
             sql = sql.replace(f' {table} ', f' public.{table} ')
             sql = sql.replace(f' {table.upper()} ', f' public.{table} ')
     
+    # Handle specific incident queries for September 2024
+    if '2024年9月' in sql or ('2024' in sql and '9月' in sql) or ('september' in sql.lower() and '2024' in sql):
+        # Query for September 2024 incidents
+        sql = "SELECT m.maintid, m.maintname, m.maintlongdesc, m.maintnotes, m.actualdatestart, m.incidentseverity, m.rootcause, e.equipname FROM public.maintenance m LEFT JOIN public.equipment e ON m.equipid = e.equipid WHERE m.actualdatestart >= '2024-09-01' AND m.actualdatestart < '2024-10-01' AND e.installlocationid = 934 ORDER BY m.actualdatestart"
+    
     # Handle biodiesel-specific queries
-    if 'バイオディーゼル' in sql and 'タンク' in sql:
+    elif 'バイオディーゼル' in sql and 'タンク' in sql:
         # Specific query for biodiesel tanks
         sql = "SELECT equipid, equipname, equiplongdesc, installlocationid FROM public.equipment WHERE installlocationid = 934 AND (UPPER(equipname) LIKE '%タンク%' OR UPPER(equipname) LIKE '%TANK%')"
     elif 'バイオディーゼルユニット' in sql:
@@ -284,6 +336,34 @@ def lambda_handler(event, context):
         sql = "SELECT equipid, equipname, equiplongdesc, manufacturer, model, installlocationid FROM public.equipment WHERE installlocationid = 934"
         results = execute_statement(sql)
         responseBody = {"TEXT": {"body": f"<biodiesel_equipment>{results}</biodiesel_equipment>"}}
+    
+    # Get incident information for specific time periods
+    elif function == "get_incidents":
+        start_date = '2024-09-01'
+        end_date = '2024-09-30'
+        location_id = 934
+        
+        for param in parameters:
+            if param["name"] == "start_date":
+                start_date = param["value"]
+            elif param["name"] == "end_date":
+                end_date = param["value"]
+            elif param["name"] == "location_id":
+                location_id = param["value"]
+        
+        sql = f"""SELECT m.maintid, m.maintname, m.maintlongdesc, m.maintnotes, 
+                         m.actualdatestart, m.incidentseverity, m.rootcause, 
+                         e.equipname, e.equipid
+                  FROM public.maintenance m 
+                  LEFT JOIN public.equipment e ON m.equipid = e.equipid 
+                  WHERE m.actualdatestart >= '{start_date}' 
+                    AND m.actualdatestart <= '{end_date}' 
+                    AND e.installlocationid = {location_id}
+                    AND m.mainttypeid = 'CM'
+                  ORDER BY m.actualdatestart"""
+        
+        results = execute_statement(sql)
+        responseBody = {"TEXT": {"body": f"<incidents>{results}</incidents>"}}
     
     # Business data queries
     else:

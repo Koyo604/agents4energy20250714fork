@@ -148,7 +148,7 @@ export async function correctStructuredOutputResponse(model: { invoke: (arg0: an
         console.log('Model response which caused error: \n', response);
         messages.push(
             new AIMessage({ content: JSON.stringify(response.parsed) }),
-            new HumanMessage({ content: `Data validation error: ${validationReslut.errors.join('\n')}. Please try again.` })
+            new HumanMessage({ content: `データ検証エラー: ${validationReslut.errors.join('\n')}。もう一度お試しください。` })
         );
         console.log('Messages sent to model: \n', stringifyLimitStringLength(messages))
         response = await model.invoke(messages)
